@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进粉明细 - WhatsApp 数据管理</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { path: path, user: user }) %>
+
+    <div class="page-container">
+        <div class="content-card">
+            <section class="table-section">
+                <h2>进粉明细表</h2>
+
+                <form method="GET" action="<%= basePath %>/details" class="filter-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="groupName" name="groupName" value="<%= filters.groupName || '' %>" placeholder="输入组名">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="accountName" name="accountName" value="<%= filters.accountName || '' %>" placeholder="输入账号名称">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="accountPhoneNumber" name="accountPhoneNumber" value="<%= filters.accountPhoneNumber || '' %>" placeholder="输入账号号码">
+                        </div>
+                         <div class="form-group">
+                            <input type="text" id="fanPhoneNumber" name="fanPhoneNumber" value="<%= filters.fanPhoneNumber || '' %>" placeholder="输入进粉号码">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="country" name="country" value="<%= filters.country || '' %>" placeholder="输入国家名称">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="limit" name="limit" value="<%= filters.limit || 20 %>" min="1" max="100" placeholder="每页条数">
+                        </div>
+                        <div class="form-group form-buttons">
+                             <button type="submit" class="btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z"></path></svg>
+                                查询
+                            </button>
+                            <a href="<%= basePath %>/details" class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4ZM10.59 12L7.76 14.83L9.17 16.24L12 13.41L14.83 16.24L16.24 14.83L13.41 12L16.24 9.17L14.83 7.76L12 10.59L9.17 7.76L7.76 9.17L10.59 12Z"></path></svg>
+                                重置
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>组名</th>
+                                <th>账号名称</th>
+                                <th>账号号码</th>
+                                <th>粉丝昵称</th>
+                                <th>进粉号码</th>
+                                <th>新增时间</th>
+                                <th>国家</th>
+                                <th>标签</th>
+                                <!-- <th>操作</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (fanDetails && fanDetails.length > 0) { %>
+                                <% fanDetails.forEach(detail => { %>
+                                    <tr>
+                                        <td><%= detail.groupName %></td>
+                                        <td><%= detail.accountName %></td>
+                                        <td><%= detail.accountNumber %></td>
+                                        <td><%= detail.fanName %></td>
+                                        <td><%= detail.fanNumber %></td>
+                                        <td><%= detail.addedTime %></td>
+                                        <td><%= detail.country %></td>
+                                        <td><%= detail.tags %></td>
+                                        <!-- <td><a href="#" class="btn btn-link">编辑标签</a></td> -->
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="8">暂无明细数据或未找到匹配项</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <% if (totalPages > 1) { %>
+                    <nav class="pagination">
+                        <ul>
+                            <% 
+                            const query = new URLSearchParams();
+                            if (filters.groupName) query.set('groupName', filters.groupName);
+                            if (filters.accountName) query.set('accountName', filters.accountName);
+                            if (filters.accountPhoneNumber) query.set('accountPhoneNumber', filters.accountPhoneNumber);
+                            if (filters.fanPhoneNumber) query.set('fanPhoneNumber', filters.fanPhoneNumber);
+                            if (filters.country) query.set('country', filters.country);
+                            if (filters.limit) query.set('limit', filters.limit);
+                            const queryString = query.toString() ? '&' + query.toString() : '';
+                            %>
+                            <% if (currentPage > 1) { %>
+                                <li><a href="<%= basePath %>/details?page=<%= currentPage - 1 %><%= queryString %>" class="btn">上一页</a></li>
+                            <% } %>
+                            <% 
+                                const maxPagesToShow = 5;
+                                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+                                if (endPage - startPage + 1 < maxPagesToShow) {
+                                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                                }
+                            %>
+                            <% if (startPage > 1) { %>
+                                <li><a href="<%= basePath %>/details?page=1<%= queryString %>" class="btn">1</a></li>
+                                <% if (startPage > 2) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
+                            <% } %>
+                            <% for (let i = startPage; i <= endPage; i++) { %>
+                                <li class="<%= i === currentPage ? 'active' : '' %>">
+                                    <a href="<%= basePath %>/details?page=<%= i %><%= queryString %>" class="btn <%= i === currentPage ? 'btn-active' : '' %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (endPage < totalPages) { %>
+                                <% if (endPage < totalPages - 1) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
+                                <li><a href="<%= basePath %>/details?page=<%= totalPages %><%= queryString %>" class="btn"><%= totalPages %></a></li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li><a href="<%= basePath %>/details?page=<%= currentPage + 1 %><%= queryString %>" class="btn">下一页</a></li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            </section>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+</body>
+</html> 

@@ -1,0 +1,432 @@
+/* 全局样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6; /* 浅灰色背景 */
+    color: #333; /* 深灰色文字 */
+    line-height: 1.6;
+}
+
+.page-container { /* 替换旧的 .container，用于整体页面布局 */
+    padding: 20px;
+}
+
+.content-card {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+}
+
+h1, h2 {
+    color: #2c3e50; /* 深蓝灰色标题 */
+    border-bottom: none; /* 移除旧的边框 */
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* 登录页面样式 */
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    margin: 80px auto;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-container h1 {
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group select {
+    width: 100%; /* 改为100%配合box-sizing */
+    padding: 12px 15px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 1em;
+    box-sizing: border-box; /* 重要：使 padding 和 border 不增加宽度 */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #409eff; /* 蓝色焦点 */
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+.btn {
+    display: inline-flex; /* 用于对齐图标和文字 */
+    align-items: center; /* 垂直居中图标和文字 */
+    justify-content: center; /* 水平居中图标和文字 */
+    padding: 10px 20px;
+    background-color: #409eff; /* 主蓝色 */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn svg {
+    margin-right: 6px;
+    width: 16px;
+    height: 16px;
+}
+
+.btn:hover {
+    background-color: #66b1ff;
+    box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.btn-secondary {
+    background-color: #909399;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #a6a9ad;
+    box-shadow: 0 2px 8px rgba(144, 147, 153, 0.3);
+}
+
+.error-message {
+    color: #f56c6c;
+    background-color: #fef0f0;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #fbc4c4;
+    font-size: 0.9em;
+}
+
+/* 页头和导航 */
+.dashboard-header {
+    background-color: #fff;
+    padding: 0 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.dashboard-header .logo-title {
+    font-size: 1.5em;
+    color: #303133;
+    font-weight: 600;
+    margin:0;
+}
+
+.dashboard-header nav {
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-header nav a.btn {
+    background-color: transparent;
+    color: #555;
+    padding: 8px 15px;
+    margin-left: 10px;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+.dashboard-header nav a.btn:hover {
+    background-color: #ecf5ff;
+    color: #409eff;
+}
+
+.dashboard-header nav .btn-nav-active {
+    background-color: #ecf5ff;
+    color: #409eff;
+    font-weight: 600;
+}
+
+.dashboard-header nav .user-welcome {
+    margin-left: 20px;
+    margin-right: 10px;
+    color: #606266;
+    font-size: 0.9em;
+}
+
+.dashboard-header nav .btn-logout {
+    background-color: #f56c6c;
+    color: #fff;
+    padding: 8px 15px;
+}
+
+.dashboard-header nav .btn-logout:hover {
+    background-color: #f78989;
+}
+
+/* 筛选表单样式 */
+.filter-form {
+    padding: 0; /* 移除旧的内边距，因为父元素是 content-card */
+    border-radius: 0;
+    margin-bottom: 25px;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+.filter-form .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* 元素之间的间距 */
+    margin-bottom: 15px;
+}
+
+.filter-form .form-group {
+    flex: 1 1 auto; /* 自动调整大小 */
+    min-width: 200px; /* 最小宽度，避免过窄 */
+    margin-bottom: 0;
+}
+
+.filter-form .form-group label {
+    display: none; /* 标签隐藏，使用 placeholder */
+}
+
+.filter-form .form-group input[type="text"],
+.filter-form .form-group input[type="number"],
+.filter-form .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.9em;
+    background-color: #fff; /* 输入框背景 */
+}
+
+.filter-form .form-buttons {
+    flex-basis: auto; /* 按钮组不占满整行 */
+    text-align: left;
+    margin-top: 0; /* 与输入框在同一行 */
+    align-self: flex-end; /* 底部对齐 */
+     padding-bottom: 1px; /* 微调对齐 */
+}
+
+/* 表格样式 */
+.table-section h2 {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 0;
+    background-color: #fff;
+    border-radius: 8px; /* 更圆润的边角 */
+    border: 1px solid #ebeef5; /* 给表格本身一个轻微的边框 */
+    /* box-shadow: 0 1px 3px rgba(0,0,0,0.04); /* 更柔和的阴影，如果需要的话 */
+}
+
+thead th {
+    background-color: #f5f7fa; /* 更中性的浅灰色 */
+    color: #303133; /* 深色文字，更易读 */
+    font-weight: 600; /*保持加粗*/
+    padding: 14px 18px; /* 增加内边距 */
+    text-align: left;
+    border-bottom: 2px solid #e4e7ed; /* 更清晰的表头底边框 */
+    font-size: 0.9em;
+    text-transform: none; /* 如果之前有大写转换，则移除 */
+}
+
+thead th:first-child {
+    border-top-left-radius: 7px; /* 配合表格的 border-radius */
+}
+
+thead th:last-child {
+    border-top-right-radius: 7px; /* 配合表格的 border-radius */
+}
+
+tbody td {
+    padding: 14px 18px; /* 增加内边距 */
+    text-align: left;
+    border-bottom: 1px solid #f0f2f5; /* 更柔和的行分隔线 */
+    color: #555;
+    font-size: 0.9em;
+    vertical-align: middle; /* 单元格内容垂直居中 */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fcfdff; /* 非常非常浅的蓝色或灰色作为斑马条纹 */
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 7px; /* 配合表格的 border-radius */
+}
+
+tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 7px; /* 配合表格的 border-radius */
+}
+
+tbody tr:hover {
+    background-color: #f0f5ff; /* 更明显的蓝色悬停效果 */
+}
+
+/* 状态标签样式 */
+.status-tag {
+    padding: 4px 10px;
+    border-radius: 12px; /* 更圆的胶囊形状 */
+    font-size: 0.8em;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+    min-width: 50px;
+}
+
+.status-online {
+    background-color: #e6f7f2; /* 浅绿色背景 */
+    color: #00a854; /* 绿色文字 */
+}
+
+.status-offline {
+    background-color: #fff1f0; /* 浅红色背景 */
+    color: #f5222d; /* 红色文字 */
+}
+
+.status-error,
+.status-banned {
+    background-color: #fffbe6; /* 浅黄色背景 */
+    color: #faad14; /* 黄色文字 */
+}
+
+.status-logout {
+    background-color: #f0f0f0; /* 浅灰色背景 */
+    color: #595959; /* 深灰色文字 */
+}
+
+/* 分页样式 */
+.pagination {
+    margin-top: 25px;
+    text-align: right; /* 分页靠右 */
+}
+
+.pagination ul li a.btn {
+    background-color: #fff;
+    color: #606266;
+    border: 1px solid #dcdfe6;
+    box-shadow: none;
+    padding: 6px 12px;
+}
+
+.pagination ul li a.btn:hover {
+    color: #409eff;
+    border-color: #409eff;
+    background-color: #fff;
+}
+
+.pagination ul li.active a.btn,
+.pagination ul li a.btn-active {
+    background-color: #409eff;
+    color: #fff;
+    border-color: #409eff;
+}
+
+/* 页脚 */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: transparent; /* 透明背景 */
+    color: #909399; /* 浅灰色文字 */
+    font-size: 0.85em;
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) { /* 调整断点 */
+    .filter-form .form-row {
+        flex-direction: column; /* 堆叠 */
+        gap: 10px;
+    }
+    .filter-form .form-group {
+        min-width: 100%; /* 占满一行 */
+    }
+    .filter-form .form-buttons {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .filter-form .form-buttons .btn {
+        width: calc(50% - 5px);
+        margin-right: 0;
+    }
+    .filter-form .form-buttons .btn:first-child {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+    }
+    .dashboard-header .logo-title {
+        margin-bottom: 10px;
+    }
+    .dashboard-header nav {
+        flex-direction: column;
+        width: 100%;
+        align-items: stretch;
+    }
+    .dashboard-header nav a.btn,
+    .dashboard-header nav .user-welcome,
+    .dashboard-header nav .btn-logout {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+     .dashboard-header nav .user-welcome {
+        order: -1; /* 欢迎语显示在最前 */
+    }
+    .page-container {
+        padding: 15px;
+    }
+    .content-card {
+        padding: 20px;
+    }
+    h1, h2 { font-size: 1.4em; }
+    th, td { font-size: 0.85em; padding: 10px 8px; }
+} 

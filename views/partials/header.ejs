@@ -1,0 +1,11 @@
+<header class="dashboard-header">
+    <h1 class="logo-title">客户数据平台</h1>
+    <nav>
+        <a href="<%= basePath %>/summary" class="btn <%= path === '/summary' ? 'btn-nav-active' : '' %>">进粉汇总</a>
+        <a href="<%= basePath %>/details" class="btn <%= path === '/details' ? 'btn-nav-active' : '' %>">进粉明细</a>
+        <% if (user) { %>
+            <span class="user-welcome">欢迎, <%= user.username %></span>
+            <a href="<%= basePath %>/logout" class="btn btn-logout">登出</a>
+        <% } %>
+    </nav>
+</header> 
