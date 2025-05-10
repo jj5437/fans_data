@@ -10,7 +10,7 @@ const APP_BASE_PATH = process.env.APP_BASE_PATH || '/';
 // 中间件
 app.use(express.urlencoded({ extended: true })); // 解析 URL编码的请求体
 app.use(express.json()); // 解析 JSON 请求体
-app.use(express.static(path.join(__dirname, 'public'))); // 静态文件服务
+// app.use(express.static(path.join(__dirname, 'public'))); // REMOVE this global static middleware
 
 // EJS 视图引擎设置
 app.set('view engine', 'ejs');
@@ -36,6 +36,9 @@ const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 
 const appRouter = express.Router();
+
+// Serve static files under APP_BASE_PATH via appRouter
+appRouter.use(express.static(path.join(__dirname, 'public')));
 
 // 为 appRouter 添加默认路由，处理直接访问 APP_BASE_PATH 的情况
 appRouter.get('/', (req, res) => {
