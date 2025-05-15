@@ -7,25 +7,45 @@
     <link rel="stylesheet" href="<%= basePath %>/css/style.css">
 </head>
 <body>
-    <%- include('partials/header', { path: path, user: user }) %>
+    <%- include('partials/header', { path: path, user: user, basePath: basePath }) %>
 
     <div class="page-container">
         <div class="content-card">
+            <!-- 新增统计总览卡片 -->
+            <div class="stats-overview-container">
+                <div class="stat-card">
+                    <h3 class="stat-title">进粉统计总览</h3>
+                    <div class="stat-numbers">
+                        <span class="main-stat"><%= overallStats.totalFans %></span>
+                        <span class="secondary-stat">/ <%= overallStats.uniqueFans %></span>
+                    </div>
+                    <p class="stat-description">申请总数/去重后</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">今日进粉统计</h3>
+                    <div class="stat-numbers">
+                        <span class="main-stat"><%= todayStats.todayFans %></span>
+                        <span class="secondary-stat">/ <%= todayStats.todayUniqueFans %></span>
+                    </div>
+                    <p class="stat-description">申请总数/去重后</p>
+                </div>
+            </div>
+
             <section class="table-section">
                 <h2>进粉汇总表</h2>
                 
                 <form method="GET" action="<%= basePath %>/summary" class="filter-form">
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group filter-group-name">
                             <input type="text" id="groupName" name="groupName" value="<%= filters.groupName || '' %>" placeholder="输入组名">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group filter-account-name">
                             <input type="text" id="accountName" name="accountName" value="<%= filters.accountName || '' %>" placeholder="输入账号名称">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group filter-phone-number">
                             <input type="text" id="phoneNumber" name="phoneNumber" value="<%= filters.phoneNumber || '' %>" placeholder="输入账号号码">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group filter-status">
                             <select id="status" name="status">
                                 <option value="" <% if (!filters.status) { %>selected<% } %>>所有状态</option>
                                 <option value="online" <% if (filters.status === 'online') { %>selected<% } %>>在线</option>
@@ -34,6 +54,12 @@
                                 <option value="banned" <% if (filters.status === 'banned') { %>selected<% } %>>封禁</option>
                                 <option value="error" <% if (filters.status === 'error') { %>selected<% } %>>错误</option>
                             </select>
+                        </div>
+                        <div class="form-group filter-date-range">
+                            <input type="date" id="startDate" name="startDate" value="<%= filters.startDate || '' %>" title="开始日期">
+                        </div>
+                        <div class="form-group filter-date-range">
+                            <input type="date" id="endDate" name="endDate" value="<%= filters.endDate || '' %>" title="结束日期">
                         </div>
                         <div class="form-group form-buttons">
                             <button type="submit" class="btn">

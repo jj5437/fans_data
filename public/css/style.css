@@ -3,9 +3,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6; /* 浅灰色背景 */
-    color: #333; /* 深灰色文字 */
+    background-color: #f7f9fc; /* 调整为稍微带蓝调的浅灰色 */
+    color: #373a3c; /* 调整基础文字颜色为深灰，更柔和 */
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased; /* 提升字体渲染平滑度 (Webkit) */
+    -moz-osx-font-smoothing: grayscale; /* 提升字体渲染平滑度 (Firefox) */
 }
 
 .page-container { /* 替换旧的 .container，用于整体页面布局 */
@@ -15,18 +17,17 @@ body {
 .content-card {
     background-color: #fff;
     padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 10px; /* 稍微增加圆角 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* 调整阴影使其更柔和且有层次 */
     margin-bottom: 25px;
 }
 
 h1, h2 {
-    color: #2c3e50; /* 深蓝灰色标题 */
-    border-bottom: none; /* 移除旧的边框 */
+    color: #2c3e50;
     padding-bottom: 0;
     margin-top: 0;
     margin-bottom: 25px;
-    font-weight: 600;
+    font-weight: 600; /* 保持不变，已经比较合适 */
 }
 
 /* 登录页面样式 */
@@ -145,9 +146,9 @@ h1, h2 {
 }
 
 .dashboard-header .logo-title {
-    font-size: 1.5em;
-    color: #303133;
-    font-weight: 600;
+    font-size: 1.6em; /* 稍微增大 */
+    color: #345375; /* 深蓝灰色，与整体协调 */
+    font-weight: 700; /* 加粗 */
     margin:0;
 }
 
@@ -158,7 +159,7 @@ h1, h2 {
 
 .dashboard-header nav a.btn {
     background-color: transparent;
-    color: #555;
+    color: #4A5568; /* 导航链接颜色变深一些 */
     padding: 8px 15px;
     margin-left: 10px;
     font-weight: 500;
@@ -166,13 +167,13 @@ h1, h2 {
 }
 
 .dashboard-header nav a.btn:hover {
-    background-color: #ecf5ff;
-    color: #409eff;
+    background-color: #e2e8f0; /* hover背景色调整 */
+    color: #2c5282; /* hover文字颜色加深 */
 }
 
 .dashboard-header nav .btn-nav-active {
-    background-color: #ecf5ff;
-    color: #409eff;
+    background-color: #dbeafe; /* 激活导航项背景 (浅蓝) */
+    color: #2563eb;    /* 激活导航项文字 (主题蓝) */
     font-weight: 600;
 }
 
@@ -193,6 +194,63 @@ h1, h2 {
     background-color: #f78989;
 }
 
+/* 新增统计总览卡片样式 */
+.stats-overview-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px; /* 稍微增加卡片间距 */
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background-color: #e7f3fe; /* 统一的浅灰色背景，比页面背景稍深一点 */
+    /* 或尝试带色彩的浅色背景，如： */
+    /* background-color: #e7f3fe; */ /* 淡蓝色 */
+    /* background-color: #e6f7f2; */ /* 淡绿色 */
+    padding: 20px 25px;
+    border-radius: 10px; /* 保持圆角 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* 调整阴影，更 subtle */
+    flex: 1;
+    text-align: center;
+    border: 1px solid #dee2e6; /* 边框颜色与背景协调 */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .stat-title {
+    font-size: 0.95em; /* 调整标题字体大小 */
+    color: #6c7d6c;    /* 标题颜色 - 中性灰色 */
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.stat-card .stat-numbers {
+    margin-bottom: 10px;
+    line-height: 1.1;
+}
+
+.stat-card .main-stat {
+    font-size: 2.1em; 
+    font-weight: 700; /* 加粗主数字 */
+    color: #2c85ce; /* 主数字颜色 - 使用Logo标题的深蓝灰色 */
+}
+
+.stat-card .secondary-stat {
+    font-size: 1.7em; 
+    font-weight: 500;
+    color: #66a6d7; /* 次要数字颜色 */
+}
+
+.stat-card .stat-description {
+    font-size: 0.8em;
+    color: #868e96;    /* 描述文字颜色 - 更浅的灰色 */
+    margin: 0;
+}
+
 /* 筛选表单样式 */
 .filter-form {
     padding: 0; /* 移除旧的内边距，因为父元素是 content-card */
@@ -210,9 +268,23 @@ h1, h2 {
 }
 
 .filter-form .form-group {
-    flex: 1 1 auto; /* 自动调整大小 */
-    min-width: 200px; /* 最小宽度，避免过窄 */
+    flex: 1 1 auto; /* 默认自动调整 */
+    min-width: 180px; /* 默认最小宽度调整 */
     margin-bottom: 0;
+}
+
+/* 特定宽度调整 */
+.filter-form .filter-group-name,
+.filter-form .filter-account-name,
+.filter-form .filter-phone-number {
+    flex-basis: 200px; /* 给前三个一个基础宽度 */
+    flex-grow: 1; /* 允许它们在有空间时增长 */
+}
+
+.filter-form .filter-status,
+.filter-form .filter-date-range {
+    flex-basis: 160px; /* 状态和日期选择框可以窄一些 */
+    flex-grow: 0.5; /* 增长幅度小一些 */
 }
 
 .filter-form .form-group label {
@@ -221,11 +293,26 @@ h1, h2 {
 
 .filter-form .form-group input[type="text"],
 .filter-form .form-group input[type="number"],
+.filter-form .form-group input[type="date"], /* Add date input */
 .filter-form .form-group select {
     width: 100%;
     padding: 10px 12px;
     font-size: 0.9em;
     background-color: #fff; /* 输入框背景 */
+    border: 1px solid #dcdfe6; /* Ensure border is defined here too for date */
+    border-radius: 4px; /* Ensure radius is defined here too for date */
+    box-sizing: border-box; /* Ensure box-sizing for date */
+}
+
+/* 确保 date input focus 样式 */
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="date"]:focus, /* Add date input */
+.form-group select:focus {
+    outline: none;
+    border-color: #409eff; /* 蓝色焦点 */
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
 
 .filter-form .form-buttons {
@@ -258,14 +345,13 @@ table {
 }
 
 thead th {
-    background-color: #f5f7fa; /* 更中性的浅灰色 */
-    color: #303133; /* 深色文字，更易读 */
-    font-weight: 600; /*保持加粗*/
-    padding: 14px 18px; /* 增加内边距 */
+    background-color: #f8fafc; /* 表头背景更亮一些 */
+    color: #334155;    /* 表头文字颜色 */
+    font-weight: 600;
+    padding: 12px 18px; /* 调整内边距 */
     text-align: left;
-    border-bottom: 2px solid #e4e7ed; /* 更清晰的表头底边框 */
-    font-size: 0.9em;
-    text-transform: none; /* 如果之前有大写转换，则移除 */
+    border-bottom: 2px solid #e2e8f0; /* 表头底边框 */
+    font-size: 1.08em; /* 略微调整字体大小 */
 }
 
 thead th:first-child {
@@ -277,16 +363,16 @@ thead th:last-child {
 }
 
 tbody td {
-    padding: 14px 18px; /* 增加内边距 */
+    padding: 12px 18px; /* 调整内边距 */
     text-align: left;
-    border-bottom: 1px solid #f0f2f5; /* 更柔和的行分隔线 */
-    color: #555;
-    font-size: 0.9em;
+    border-bottom: 1px solid #f1f5f9; /* 行分隔线颜色更淡 */
+    color: #475569; /* 表格文字颜色 */
+    font-size: 0.98em;
     vertical-align: middle; /* 单元格内容垂直居中 */
 }
 
 tbody tr:nth-child(even) {
-    background-color: #fcfdff; /* 非常非常浅的蓝色或灰色作为斑马条纹 */
+    background-color: #fbfdff; /* 斑马条纹更淡，几乎与白色接近但有区分 */
 }
 
 tbody tr:last-child td {
@@ -302,7 +388,19 @@ tbody tr:last-child td:last-child {
 }
 
 tbody tr:hover {
-    background-color: #f0f5ff; /* 更明显的蓝色悬停效果 */
+    background-color: #eef2ff; /* hover颜色调整 (淡紫色/蓝色) */
+}
+
+/* 新增：重粉标记样式 */
+.duplicate-marker {
+    background-color: #fff0f0; /* 淡红色背景 */
+    color: #f5222d;    /* 突出红色文字 */
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75em; /* 比状态标签稍小一点 */
+    margin-left: 8px;
+    font-weight: 500;
+    border: 1px solid #ffccc7; /* 淡红色边框 */
 }
 
 /* 状态标签样式 */
@@ -317,24 +415,24 @@ tbody tr:hover {
 }
 
 .status-online {
-    background-color: #e6f7f2; /* 浅绿色背景 */
-    color: #00a854; /* 绿色文字 */
+    background-color: #6dca21; /* 浅绿色背景 */
+    color: #ffffff; /* 白色文字 */
 }
 
 .status-offline {
     background-color: #fff1f0; /* 浅红色背景 */
-    color: #f5222d; /* 红色文字 */
+    color: #ffffff; 
 }
 
 .status-error,
 .status-banned {
-    background-color: #fffbe6; /* 浅黄色背景 */
-    color: #faad14; /* 黄色文字 */
+    background-color: #e25d1f; /* 浅黄色背景 */
+    color: #ffffff; /* 黄色文字 */
 }
 
 .status-logout {
     background-color: #f0f0f0; /* 浅灰色背景 */
-    color: #595959; /* 深灰色文字 */
+    color: #ffffff; /* 深灰色文字 */
 }
 
 /* 分页样式 */
@@ -342,6 +440,17 @@ tbody tr:hover {
     margin-top: 25px;
     text-align: right; /* 分页靠右 */
 }
+
+.pagination ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* 水平排列 */
+    justify-content: flex-end; /* 条目靠右对齐 */
+    gap: 8px; /* 条目之间的间距 */
+}
+
+
 
 .pagination ul li a.btn {
     background-color: #fff;

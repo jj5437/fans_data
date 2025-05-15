@@ -31,6 +31,12 @@
                         <div class="form-group">
                             <input type="text" id="country" name="country" value="<%= filters.country || '' %>" placeholder="输入国家名称">
                         </div>
+                        <div class="form-group filter-date-range">
+                            <input type="date" id="startDate" name="startDate" value="<%= filters.startDate || '' %>" title="开始日期">
+                        </div>
+                        <div class="form-group filter-date-range">
+                            <input type="date" id="endDate" name="endDate" value="<%= filters.endDate || '' %>" title="结束日期">
+                        </div>
                         <div class="form-group">
                             <input type="number" id="limit" name="limit" value="<%= filters.limit || 20 %>" min="1" max="100" placeholder="每页条数">
                         </div>
@@ -70,7 +76,12 @@
                                         <td><%= detail.accountName %></td>
                                         <td><%= detail.accountNumber %></td>
                                         <td><%= detail.fanName %></td>
-                                        <td><%= detail.fanNumber %></td>
+                                        <td>
+                                            <%= detail.fanNumber %>
+                                            <% if (detail.isDuplicated) { %>
+                                                <span class="duplicate-marker">重粉</span>
+                                            <% } %>
+                                        </td>
                                         <td><%= detail.addedTime %></td>
                                         <td><%= detail.country %></td>
                                         <td><%= detail.tags %></td>
@@ -96,6 +107,8 @@
                             if (filters.accountPhoneNumber) query.set('accountPhoneNumber', filters.accountPhoneNumber);
                             if (filters.fanPhoneNumber) query.set('fanPhoneNumber', filters.fanPhoneNumber);
                             if (filters.country) query.set('country', filters.country);
+                            if (filters.startDate) query.set('startDate', filters.startDate);
+                            if (filters.endDate) query.set('endDate', filters.endDate);
                             if (filters.limit) query.set('limit', filters.limit);
                             const queryString = query.toString() ? '&' + query.toString() : '';
                             %>

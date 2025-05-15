@@ -10,47 +10,83 @@ function isAuthenticated(req, res, next) {
     if (req.session.user) {
         return next();
     }
-    res.redirect('/login');
+    res.redirect(res.locals.basePath + '/login'); //确保使用basePath
 }
 
 // 重定向 /dashboard 到 /summary
 router.get('/dashboard', isAuthenticated, (req, res) => {
-    res.redirect('/summary');
+    res.redirect(res.locals.basePath + '/summary'); //确保使用basePath
 });
 
 // GET /summary - 显示进粉汇总表
 router.get('/summary', isAuthenticated, async (req, res) => {
     try {
-        const { groupName, accountName, phoneNumber, status } = req.query;
-        let fanSummary = [];
-        const params = {
+        const { groupName, accountName, phoneNumber, status, startDate, endDate } = req.query;
+        let fanSummaryTableData = [];
+        let overallStats = { totalFans: 0, uniqueFans: 0 };
+        let todayStats = { todayFans: 0, todayUniqueFans: 0 };
+
+        // Parameters for the API call
+        const apiParams = {
             groupName: groupName || '',
             accountName: accountName || '',
             phoneNumber: phoneNumber || '',
             status: status || ''
         };
 
+        if (startDate && endDate) {
+            try {
+                // Ensure dates are valid before stringifying, optional basic validation
+                new Date(startDate).toISOString(); 
+                new Date(endDate).toISOString();
+                apiParams.dateRange = JSON.stringify([startDate, endDate]);
+            } catch (e) {
+                console.error("Invalid date format for dateRange:", startDate, endDate);
+                // Potentially handle error, e.g., by not adding dateRange or sending an error to user
+            }
+        }
+
+        // Parameters for rendering the template (filters)
+        const templateFilters = {
+            groupName: groupName || '',
+            accountName: accountName || '',
+            phoneNumber: phoneNumber || '',
+            status: status || '',
+            startDate: startDate || '',
+            endDate: endDate || ''
+        };
+
         try {
-            const summaryResponse = await axios.get(`${API_BASE_URL}/fans/summary`, { params });
-            if (summaryResponse.data && Array.isArray(summaryResponse.data)) {
-                fanSummary = summaryResponse.data.map(item => ({
-                    groupName: item.groupName || 'N/A',
-                    accountName: item.accountName || 'N/A',
-                    accountNumber: item.accountPhoneNumber || 'N/A',
-                    accountStatus: item.accountStatus || 'N/A',
-                    fansToday: item.todayFans || 0,
-                    totalFans: item.totalFans || 0
-                }));
+            const summaryResponse = await axios.get(`${API_BASE_URL}/fans/summary`, { params: apiParams }); // Use apiParams
+            if (summaryResponse.data && typeof summaryResponse.data === 'object') {
+                overallStats.totalFans = summaryResponse.data.totalFans || 0;
+                overallStats.uniqueFans = summaryResponse.data.uniqueFans || 0;
+                todayStats.todayFans = summaryResponse.data.todayFans || 0;
+                todayStats.todayUniqueFans = summaryResponse.data.todayUniqueFans || 0;
+
+                if (Array.isArray(summaryResponse.data.summary)) {
+                    fanSummaryTableData = summaryResponse.data.summary.map(item => ({
+                        groupName: item.groupName || 'N/A',
+                        accountName: item.accountName || 'N/A',
+                        accountNumber: item.accountPhoneNumber || 'N/A',
+                        accountStatus: item.accountStatus || 'N/A',
+                        fansToday: item.todayFans || 0,
+                        totalFans: item.totalFans || 0
+                    }));
+                }
             }
         } catch (apiError) {
             console.error(`调用进粉汇总 API (${API_BASE_URL}/fans/summary) 失败:`, apiError.message);
         }
 
         res.render('summary', {
-            path: '/summary', // 用于导航栏高亮
+            path: '/summary',
             user: req.session.user,
-            fanSummary: fanSummary,
-            filters: params // 将筛选条件传回给视图，用于表单回填
+            overallStats: overallStats,
+            todayStats: todayStats,
+            fanSummary: fanSummaryTableData,
+            filters: templateFilters, // Use templateFilters for rendering
+            basePath: res.locals.basePath
         });
 
     } catch (error) {
@@ -65,14 +101,16 @@ router.get('/details', isAuthenticated, async (req, res) => {
         const { 
             page, limit, 
             groupName, accountName, accountPhoneNumber, 
-            fanPhoneNumber, country 
+            fanPhoneNumber, country, 
+            startDate, endDate
         } = req.query;
 
         let processedFanDetails = [];
         let totalPages = 1;
         let currentPage = 1;
 
-        const queryParams = { // Renamed to avoid conflict with filters object for rendering
+        // API 调用参数
+        const apiCallParams = {
             page: parseInt(page) || 1,
             limit: parseInt(limit) || 20, 
             groupName: groupName || '',
@@ -81,17 +119,40 @@ router.get('/details', isAuthenticated, async (req, res) => {
             fanPhoneNumber: fanPhoneNumber || '',
             country: country || ''
         };
-        currentPage = queryParams.page;
+        currentPage = apiCallParams.page;
+
+        if (startDate && endDate) {
+            try {
+                new Date(startDate).toISOString();
+                new Date(endDate).toISOString();
+                apiCallParams.dateRange = JSON.stringify([startDate, endDate]);
+            } catch (e) {
+                console.error("Invalid date format for dateRange in /details:", startDate, endDate);
+            }
+        }
+
+        // 模板渲染用的筛选条件
+        const templateFilters = {
+            groupName: apiCallParams.groupName,
+            accountName: apiCallParams.accountName,
+            accountPhoneNumber: apiCallParams.accountPhoneNumber,
+            fanPhoneNumber: apiCallParams.fanPhoneNumber,
+            country: apiCallParams.country,
+            limit: apiCallParams.limit,
+            startDate: startDate || '',
+            endDate: endDate || ''
+        };
 
         try {
-            const detailsResponse = await axios.get(`${API_BASE_URL}/fans/details`, { params: queryParams });
+            const detailsResponse = await axios.get(`${API_BASE_URL}/fans/details`, { params: apiCallParams });
             if (detailsResponse.data && Array.isArray(detailsResponse.data.fans)) {
                 processedFanDetails = detailsResponse.data.fans.map(fan => ({
                     groupName: fan.groupName || 'N/A',
                     accountName: fan.accountName || 'N/A',
                     accountNumber: fan.accountPhoneNumber || 'N/A',
-                    fanName: fan.fanName || 'N/A', // 添加粉丝昵称
+                    fanName: fan.fanName || 'N/A',
                     fanNumber: fan.fanPhoneNumber || 'N/A',
+                    isDuplicated: fan.isDuplicated || false,
                     addedTime: fan.addedAt ? new Date(fan.addedAt).toLocaleString() : 'N/A',
                     country: fan.country || 'N/A',
                     tags: Array.isArray(fan.tags) && fan.tags.length > 0 ? fan.tags.join(', ') : (fan.tags || 'N/A')
@@ -103,19 +164,13 @@ router.get('/details', isAuthenticated, async (req, res) => {
         }
 
         res.render('details', {
-            path: '/details', // 用于导航栏高亮
+            path: '/details',
             user: req.session.user,
             fanDetails: processedFanDetails,
             totalPages: totalPages,
             currentPage: currentPage,
-            filters: { // For rendering the filter form values
-                 groupName: queryParams.groupName,
-                 accountName: queryParams.accountName,
-                 accountPhoneNumber: queryParams.accountPhoneNumber,
-                 fanPhoneNumber: queryParams.fanPhoneNumber,
-                 country: queryParams.country,
-                 limit: queryParams.limit
-            } // 将筛选条件传回给视图
+            filters: templateFilters,
+            basePath: res.locals.basePath
         });
 
     } catch (error) {
