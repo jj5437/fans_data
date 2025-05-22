@@ -49,12 +49,16 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4ZM10.59 12L7.76 14.83L9.17 16.24L12 13.41L14.83 16.24L16.24 14.83L13.41 12L16.24 9.17L14.83 7.76L12 10.59L9.17 7.76L7.76 9.17L10.59 12Z"></path></svg>
                                 重置
                             </a>
+                            <button type="button" id="exportBtn" class="btn btn-primary" onclick="exportTableToCSV('进粉明细数据.csv')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10H18L12 16L6 10H11V3H13V10ZM4 19H20V12H22V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V12H4V19Z"></path></svg>
+                                导出CSV
+                            </button>
                         </div>
                     </div>
                 </form>
 
                 <div class="table-responsive">
-                    <table>
+                    <table id="fanDetailsTable">
                         <thead>
                             <tr>
                                 <th>组名</th>
@@ -97,55 +101,144 @@
                     </table>
                 </div>
 
-                <% if (totalPages > 1) { %>
-                    <nav class="pagination">
-                        <ul>
-                            <% 
-                            const query = new URLSearchParams();
-                            if (filters.groupName) query.set('groupName', filters.groupName);
-                            if (filters.accountName) query.set('accountName', filters.accountName);
-                            if (filters.accountPhoneNumber) query.set('accountPhoneNumber', filters.accountPhoneNumber);
-                            if (filters.fanPhoneNumber) query.set('fanPhoneNumber', filters.fanPhoneNumber);
-                            if (filters.country) query.set('country', filters.country);
-                            if (filters.startDate) query.set('startDate', filters.startDate);
-                            if (filters.endDate) query.set('endDate', filters.endDate);
-                            if (filters.limit) query.set('limit', filters.limit);
-                            const queryString = query.toString() ? '&' + query.toString() : '';
-                            %>
-                            <% if (currentPage > 1) { %>
-                                <li><a href="<%= basePath %>/details?page=<%= currentPage - 1 %><%= queryString %>" class="btn">上一页</a></li>
-                            <% } %>
-                            <% 
-                                const maxPagesToShow = 5;
-                                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-                                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-                                if (endPage - startPage + 1 < maxPagesToShow) {
-                                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                <% /* Section for total records display and pagination controls */ %>
+                <div class="table-footer-controls" style="margin-top: 20px; text-align: center;">
+                    <% /* Display total records count */ %>
+                    <div class="total-records-display" style="margin-bottom: 10px;">
+                        <%
+                            let recordsTextToShow = "";
+                            const pageLimit = parseInt(filters.limit) || 20;
+                            const numTotalPages = (typeof totalPages === 'number' && totalPages >= 0) ? totalPages : 0;
+                            const currentFanDetailsLength = (fanDetails && Array.isArray(fanDetails)) ? fanDetails.length : 0;
+
+                            // Prioritize exact totalRecords if available and is a number
+                            if (typeof totalRecords === 'number' && totalRecords >= 0) {
+                                recordsTextToShow = `共 ${totalRecords} 条记录`;
+                            } else {
+                                // Fallback to approximation or current page count if totalRecords is not provided
+                                if (numTotalPages > 1) {
+                                    recordsTextToShow = `总共约 ${numTotalPages * pageLimit} 条记录`;
+                                } else if (numTotalPages === 1) {
+                                    recordsTextToShow = `共 ${currentFanDetailsLength} 条记录`;
+                                } else { // numTotalPages is 0 or totalRecords not suitable
+                                    recordsTextToShow = "共 0 条记录";
                                 }
-                            %>
-                            <% if (startPage > 1) { %>
-                                <li><a href="<%= basePath %>/details?page=1<%= queryString %>" class="btn">1</a></li>
-                                <% if (startPage > 2) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
-                            <% } %>
-                            <% for (let i = startPage; i <= endPage; i++) { %>
-                                <li class="<%= i === currentPage ? 'active' : '' %>">
-                                    <a href="<%= basePath %>/details?page=<%= i %><%= queryString %>" class="btn <%= i === currentPage ? 'btn-active' : '' %>"><%= i %></a>
-                                </li>
-                            <% } %>
-                            <% if (endPage < totalPages) { %>
-                                <% if (endPage < totalPages - 1) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
-                                <li><a href="<%= basePath %>/details?page=<%= totalPages %><%= queryString %>" class="btn"><%= totalPages %></a></li>
-                            <% } %>
-                            <% if (currentPage < totalPages) { %>
-                                <li><a href="<%= basePath %>/details?page=<%= currentPage + 1 %><%= queryString %>" class="btn">下一页</a></li>
-                            <% } %>
-                        </ul>
-                    </nav>
-                <% } %>
+                            }
+                        %>
+                        <span><%= recordsTextToShow %></span>
+                    </div>
+
+                    <% /* Display pagination controls only if there are multiple pages */ %>
+                    <% if (numTotalPages > 1) { %>
+                        <nav class="pagination">
+                            <ul>
+                                <% 
+                                const query = new URLSearchParams();
+                                if (filters.groupName) query.set('groupName', filters.groupName);
+                                if (filters.accountName) query.set('accountName', filters.accountName);
+                                if (filters.accountPhoneNumber) query.set('accountPhoneNumber', filters.accountPhoneNumber);
+                                if (filters.fanPhoneNumber) query.set('fanPhoneNumber', filters.fanPhoneNumber);
+                                if (filters.country) query.set('country', filters.country);
+                                if (filters.startDate) query.set('startDate', filters.startDate);
+                                if (filters.endDate) query.set('endDate', filters.endDate);
+                                if (filters.limit) query.set('limit', filters.limit);
+                                const queryString = query.toString() ? '&' + query.toString() : '';
+                                %>
+                                <% if (currentPage > 1) { %>
+                                    <li><a href="<%= basePath %>/details?page=<%= currentPage - 1 %><%= queryString %>" class="btn">上一页</a></li>
+                                <% } %>
+                                <% 
+                                    const maxPagesToShow = 5;
+                                    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                                    let endPage = Math.min(numTotalPages, startPage + maxPagesToShow - 1);
+                                    if (endPage - startPage + 1 < maxPagesToShow) {
+                                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                                    }
+                                    // Ensure startPage is at least 1, especially if numTotalPages is 0 initially.
+                                    if (numTotalPages === 0) startPage = 1;
+
+
+                                %>
+                                <% if (startPage > 1) { %>
+                                    <li><a href="<%= basePath %>/details?page=1<%= queryString %>" class="btn">1</a></li>
+                                    <% if (startPage > 2) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
+                                <% } %>
+                                <% for (let i = startPage; i <= endPage; i++) { %>
+                                    <% if (i > numTotalPages) break; // Defensive break if endPage calculation is off with numTotalPages=0 %>
+                                    <li class="<%= i === currentPage ? 'active' : '' %>">
+                                        <a href="<%= basePath %>/details?page=<%= i %><%= queryString %>" class="btn <%= i === currentPage ? 'btn-active' : '' %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                <% if (endPage < numTotalPages) { %>
+                                    <% if (endPage < numTotalPages - 1) { %><li><span class="pagination-ellipsis">...</span></li><% } %>
+                                    <li><a href="<%= basePath %>/details?page=<%= numTotalPages %><%= queryString %>" class="btn"><%= numTotalPages %></a></li>
+                                <% } %>
+                                <% if (currentPage < numTotalPages) { %>
+                                    <li><a href="<%= basePath %>/details?page=<%= currentPage + 1 %><%= queryString %>" class="btn">下一页</a></li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    <% } %>
+                </div>
             </section>
         </div>
     </div>
 
     <%- include('partials/footer') %>
+
+    <script>
+        function exportTableToCSV(filename) {
+            const table = document.getElementById("fanDetailsTable");
+            const rows = table.querySelectorAll("tr");
+            
+            // 准备CSV内容
+            let csvContent = "";
+            
+            // 导出表头
+            const headerCells = rows[0].querySelectorAll("th");
+            const headerValues = [];
+            headerCells.forEach(cell => {
+                headerValues.push('"' + cell.innerText.replace(/"/g, '""') + '"');
+            });
+            csvContent += headerValues.join(",") + "\n";
+            
+            // 导出数据行
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const dataCells = row.querySelectorAll("td");
+                
+                // 跳过"无数据"行
+                if (dataCells.length === 1 && dataCells[0].getAttribute("colspan")) {
+                    continue;
+                }
+                
+                const rowValues = [];
+                dataCells.forEach(cell => {
+                    // 处理重粉标记
+                    let cellText = cell.innerText.trim();
+                    // 如果有重粉标记，需要特殊处理
+                    if (cell.querySelector(".duplicate-marker")) {
+                        cellText = cell.childNodes[0].nodeValue.trim() + " (重粉)";
+                    }
+                    rowValues.push('"' + cellText.replace(/"/g, '""') + '"');
+                });
+                csvContent += rowValues.join(",") + "\n";
+            }
+            
+            // 创建Blob对象并下载
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // 创建下载链接
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html> 

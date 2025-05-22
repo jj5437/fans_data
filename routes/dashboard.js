@@ -108,6 +108,7 @@ router.get('/details', isAuthenticated, async (req, res) => {
         let processedFanDetails = [];
         let totalPages = 1;
         let currentPage = 1;
+        let totalRecords = 0; // Initialize totalRecords
 
         // API 调用参数
         const apiCallParams = {
@@ -158,9 +159,12 @@ router.get('/details', isAuthenticated, async (req, res) => {
                     tags: Array.isArray(fan.tags) && fan.tags.length > 0 ? fan.tags.join(', ') : (fan.tags || 'N/A')
                 }));
                 totalPages = detailsResponse.data.totalPages || 1;
+                totalRecords = detailsResponse.data.totalFans || 0; // Extract totalRecords from API response
             }
         } catch (apiError) {
             console.error(`调用进粉明细 API (${API_BASE_URL}/fans/details) 失败:`, apiError.message);
+            // It's good practice to ensure totalRecords is a number even in case of API error for template safety
+            totalRecords = 0; 
         }
 
         res.render('details', {
@@ -170,6 +174,7 @@ router.get('/details', isAuthenticated, async (req, res) => {
             totalPages: totalPages,
             currentPage: currentPage,
             filters: templateFilters,
+            totalRecords: totalRecords, // Pass totalRecords to the template
             basePath: res.locals.basePath
         });
 

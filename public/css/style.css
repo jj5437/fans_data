@@ -420,7 +420,7 @@ tbody tr:hover {
 }
 
 .status-offline {
-    background-color: #fff1f0; /* 浅红色背景 */
+    background-color: #777777; /* 调整为中灰色背景 */
     color: #ffffff; 
 }
 
@@ -431,7 +431,7 @@ tbody tr:hover {
 }
 
 .status-logout {
-    background-color: #f0f0f0; /* 浅灰色背景 */
+    background-color: #5A5A5A; /* 调整为深灰色背景 */
     color: #ffffff; /* 深灰色文字 */
 }
 
@@ -449,8 +449,6 @@ tbody tr:hover {
     justify-content: flex-end; /* 条目靠右对齐 */
     gap: 8px; /* 条目之间的间距 */
 }
-
-
 
 .pagination ul li a.btn {
     background-color: #fff;
