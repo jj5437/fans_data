@@ -36,9 +36,11 @@
                 
                 <form method="GET" action="<%= basePath %>/summary" class="filter-form">
                     <div class="form-row">
+                        <% if (user && user.role === 'admin') { %>
                         <div class="form-group filter-group-name">
                             <input type="text" id="groupName" name="groupName" value="<%= filters.groupName || '' %>" placeholder="输入组名">
                         </div>
+                        <% } %>
                         <div class="form-group filter-account-name">
                             <input type="text" id="accountName" name="accountName" value="<%= filters.accountName || '' %>" placeholder="输入账号名称">
                         </div>
@@ -70,12 +72,16 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4ZM10.59 12L7.76 14.83L9.17 16.24L12 13.41L14.83 16.24L16.24 14.83L13.41 12L16.24 9.17L14.83 7.76L12 10.59L9.17 7.76L7.76 9.17L10.59 12Z"></path></svg>
                                 重置
                             </a>
+                            <button type="button" id="exportBtn" class="btn btn-primary" onclick="exportTableToCSV('进粉汇总数据.csv')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10H18L12 16L6 10H11V3H13V10ZM4 19H20V12H22V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V12H4V19Z"></path></svg>
+                                导出CSV
+                            </button>
                         </div>
                     </div>
                 </form>
 
                 <div class="table-responsive">
-                    <table>
+                    <table id="fanSummaryTable">
                         <thead>
                             <tr>
                                 <th>组名</th>
@@ -124,5 +130,56 @@
     </div>
 
     <%- include('partials/footer') %>
+    
+    <script>
+        function exportTableToCSV(filename) {
+            const table = document.getElementById("fanSummaryTable");
+            const rows = table.querySelectorAll("tr");
+            
+            // 准备CSV内容
+            let csvContent = "";
+            
+            // 导出表头
+            const headerCells = rows[0].querySelectorAll("th");
+            const headerValues = [];
+            headerCells.forEach(cell => {
+                headerValues.push('"' + cell.innerText.replace(/"/g, '""') + '"');
+            });
+            csvContent += headerValues.join(",") + "\n";
+            
+            // 导出数据行
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const dataCells = row.querySelectorAll("td");
+                
+                // 跳过"无数据"行
+                if (dataCells.length === 1 && dataCells[0].getAttribute("colspan")) {
+                    continue;
+                }
+                
+                const rowValues = [];
+                dataCells.forEach(cell => {
+                    // 获取单元格文本内容，处理状态标签
+                    let cellText = cell.innerText.trim();
+                    rowValues.push('"' + cellText.replace(/"/g, '""') + '"');
+                });
+                csvContent += rowValues.join(",") + "\n";
+            }
+            
+            // 创建Blob对象并下载
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // 创建下载链接
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html> 

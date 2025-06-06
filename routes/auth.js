@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { MongoClient } = require('mongodb'); // 添加 MongoDB 客户端
 
-// 数据库连接信息
-const MONGO_URI = 'mongodb://tgfan:tgfan@209.159.150.210:27017/whatsapp_manager_tgfan';
-const DB_NAME = 'whatsapp_manager_tgfan';
+// 数据库连接信息从环境变量获取
+const MONGO_URI = process.env.MONGO_URI;
+const DB_NAME = process.env.MONGO_DB_NAME;
 
 // GET /login - 显示登录页面
 router.get('/login', (req, res) => {
@@ -41,6 +41,7 @@ router.post('/login', async (req, res) => {
         
         // 查找匹配的组名
         const group = await accountGroups.findOne({ name: username });
+        
         if (group && password === username + '123456') {
             // 组名存在且密码正确 (groupName + 123456)
             req.session.user = {
