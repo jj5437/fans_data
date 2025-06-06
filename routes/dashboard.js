@@ -13,6 +13,19 @@ function isAuthenticated(req, res, next) {
     res.redirect(res.locals.basePath + '/login'); //确保使用basePath
 }
 
+// 中间件：检查用户是否有权限访问明细页面
+function canAccessDetails(req, res, next) {
+    if (req.session.user && req.session.user.role === 'admin') {
+        return next();
+    }
+    // 如果是组用户，则重定向到汇总页面
+    if (req.session.user) {
+        return res.redirect(res.locals.basePath + '/summary');
+    }
+    // 如果未登录，则重定向到登录页面
+    res.redirect(res.locals.basePath + '/login');
+}
+
 // 重定向 /dashboard 到 /summary
 router.get('/dashboard', isAuthenticated, (req, res) => {
     res.redirect(res.locals.basePath + '/summary'); //确保使用basePath
@@ -28,7 +41,7 @@ router.get('/summary', isAuthenticated, async (req, res) => {
 
         // Parameters for the API call
         const apiParams = {
-            groupName: groupName || '',
+            groupName: req.session.user.role === 'group' ? req.session.user.groupName : (groupName || ''),
             accountName: accountName || '',
             phoneNumber: phoneNumber || '',
             status: status || ''
@@ -48,7 +61,7 @@ router.get('/summary', isAuthenticated, async (req, res) => {
 
         // Parameters for rendering the template (filters)
         const templateFilters = {
-            groupName: groupName || '',
+            groupName: req.session.user.role === 'group' ? req.session.user.groupName : (groupName || ''),
             accountName: accountName || '',
             phoneNumber: phoneNumber || '',
             status: status || '',
@@ -96,7 +109,7 @@ router.get('/summary', isAuthenticated, async (req, res) => {
 });
 
 // GET /details - 显示进粉明细表
-router.get('/details', isAuthenticated, async (req, res) => {
+router.get('/details', isAuthenticated, canAccessDetails, async (req, res) => {
     try {
         const { 
             page, limit, 
